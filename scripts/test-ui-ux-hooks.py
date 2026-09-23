@@ -31,7 +31,8 @@ class HooksTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="ui-ux-hooks-")
         self.addCleanup(self.temporary.cleanup)
-        self.base = Path(self.temporary.name)
+        # Match the CLI boundary, including Windows short temporary paths.
+        self.base = Path(self.temporary.name).resolve()
         self.root = self.base / "source with spaces"
         shutil.copytree(ROOT / "docs/ux", self.root / "docs/ux")
         for name in ("README.md", "VALIDATION.md"):
