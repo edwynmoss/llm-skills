@@ -1,0 +1,36 @@
+name: Validate LLM Skills
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Validate libraries and release boundary
+        shell: pwsh
+        run: |
+          python -I -B docs/ux/scripts/check-package.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -I -B docs/backend/scripts/check-package.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -I -B scripts/check-release.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Run regression checks
+        shell: pwsh
+        run: |
+          python -I -B scripts/test-skill-library.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -I -B scripts/test-ui-ux-hooks.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -I -B scripts/test-release.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify isolated installations
+        shell: pwsh
+        run: |
+          ./scripts/test-install-ui-ux-context.ps1 -WorkDirectory $env:RUNNER_TEMP
+          ./scripts/test-backend-context.ps1 -WorkDirectory $env:RUNNER_TEMP

@@ -1,0 +1,32 @@
+# Project decision register
+
+These are questions to resolve from an actual consuming project, not unanswered defects in this library. Reuse inspected decisions; ask only when the answer changes dependent work. Every resolution records owner, source/date/revision, chosen option, rationale, affected contracts and evidence. Defaults below describe safe authoring behavior, not invented runtime policy.
+
+| ID | Status / owner | Decision and consequence | Evidence needed | Behavior while unresolved |
+|---|---|---|---|---|
+| BD01 | PROJECT REQUIRED / architecture owner | Actual stack, versions, deployment topology and authoritative instructions | Repository manifests, code and current config | Stay framework-neutral; no version-specific guarantee |
+| BD02 | PROJECT REQUIRED / API/domain owner | Input/output meaning, durable acceptance and completed outcome | Canonical API/domain contract and callers | Specify the gap; do not invent a successful status |
+| BD03 | PROJECT REQUIRED / API/security owner | Error format, status mapping and resource-existence disclosure | Existing consumers and disclosure policy | Preserve current verified contract; isolate conflicting changes |
+| BD04 | PROJECT REQUIRED / domain/data owner | Merge/replace/clear, deletion and ambiguous identity reconciliation | Current journey and approved data semantics | No guessed merge winner or destructive clearing |
+| BD05 | PROJECT REQUIRED / product/data owner | List ordering, consistency, cursor lifetime, exact counts and export parity | Supported query/UX contract and storage behavior | Avoid claiming snapshot pagination or exact coverage |
+| BD06 | PROJECT REQUIRED / API/release owner | Supported client/app/payload versions and deprecation overlap | Consumer inventory and release policy | Preserve known consumers; label compatibility gaps |
+| BD07 | PROJECT REQUIRED / domain owner | Defaults, item overrides, rounding and immutable snapshots | Canonical calculation and lifecycle policy | Do not accidentally copy inheritance or recalculate history |
+| BD08 | PROJECT REQUIRED / platform/security owner | Middleware order, bypasses and trusted proxy/context boundary | Actual framework registration and deployment | Inspect source; no universal ordering prescription |
+| BD09 | PROJECT REQUIRED / provider/security owner | Signature representation, authenticity and replay policy | Exact provider/version documentation and integration config | Do not implement guessed signature or freshness rules |
+| BD10 | PROJECT REQUIRED / product/operations owner | Deadline, retry, rate/admission and exhaustion budgets | Measured workload, provider constraints and adopted objectives | No arbitrary retry count, timeout or global rate cap |
+| BD11 | PROJECT REQUIRED / security/domain owner | Operation/object/field/tenant permissions and public exceptions | Canonical policy and principal matrix | Do not grant access based on missing policy |
+| BD12 | PROJECT REQUIRED / security/workflow owner | Revocation and acceptance-time versus execution-time delegation | Existing job/approval/identity contract | Surface stale-authority risk; do not capture request credentials |
+| BD13 | PROJECT REQUIRED / data/security owner | Retention, deletion, evidence, telemetry access and privacy limits | Applicable project requirements and authorized classification | Minimize fixtures; do not invent legal obligations or delete records |
+| BD14 | PROJECT REQUIRED / operations/data owner | Capacity, pool/concurrency/storage and performance objectives | Representative measurements and resource constraints | Prefer bounded existing settings; no speculative scale claim |
+| BD15 | PROJECT REQUIRED / domain/data owner | Legacy duplicates, orphan repair, historical retention and identity replacement | Source evidence and approved reconciliation | Preserve ambiguous records and report unresolved matches |
+| BD16 | PROJECT REQUIRED / product/data owner | Read-after-write, replica/cache freshness and degraded reads | Consumer requirements and actual topology | Do not map unavailable/stale state to authoritative absence |
+| BD17 | PROJECT REQUIRED / domain owner | Units, numeric precision, rounding, instant/date/local-time and schedule policy | Existing domain calculations and external contracts | No guessed currency precision, timezone or missed-run behavior |
+| BD18 | PROJECT REQUIRED / domain/data owner | Required concurrency invariant and selected isolation/conflict strategy | Competing-writer analysis and engine/version semantics | Identify forbidden interleaving; do not promise safety from a precheck |
+| BD19 | PROJECT REQUIRED / API/workflow owner | Idempotency scope, request fingerprint, result replay and retention | Canonical operation lifecycle and provider capabilities | Treat repeat safety as unverified, especially after unknown outcome |
+| BD20 | PROJECT REQUIRED / workflow/platform owner | Lease, visibility, stale-worker protection and acknowledgement boundary | Broker/store guarantees and failure analysis | No claim that lease expiry stops a worker |
+| BD21 | PROJECT REQUIRED / release/data owner | Rollout phases, destructive cutover, recovery objectives and execution scope | Representative rehearsal and authorized environment | Author/review source only within scope; no automatic application |
+| BD22 | PROJECT REQUIRED / data/workflow owner | Backfill/import/replay checkpoint, concurrency and reduced-input reconciliation | Source identity and canonical mutation contract | No unbounded or guessed replay against live state |
+| BD23 | PROJECT REQUIRED / domain/event owner | Event order, version progression and stale/gap handling | Producer/consumer contract and canonical lifecycle | Do not assume globally ordered or exactly-once delivery |
+| BD24 | PROJECT REQUIRED / operations/product owner | Degradation, alert/action owner, quarantine and manual recovery | Existing runbooks, routes, objectives and business outcomes | Report unresolved operational ownership; do not add another notifier |
+
+Skill authoring and user-level context installation are authorized in this task. These decisions remain per-project because the library is general. Backend application hooks, migrations, live queries, provider activation and deployment are not automatically adopted. The frontend and backend libraries reference the same resolved project decisions rather than maintaining competing copies.
