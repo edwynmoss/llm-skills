@@ -29,3 +29,7 @@ The six skill entry instructions remain unchanged from the reviewed source entri
 - The inventory and pattern scanner have bounded coverage. They cannot certify confidentiality, security, accessibility or production reliability. Review Git history, author metadata and the actual publication contents separately as described in [PUBLICATION.md](PUBLICATION.md).
 
 Reproduction commands are in the [README](README.md). Test fixtures use temporary directories and clean them up. Package checks run without generating Python bytecode or tracked test reports.
+
+## Publication follow-up, 23 September 2026
+
+The installer test harness now saves, clears and restores both library environment variables, so a preconfigured host cannot contaminate the coexistence check. Expected rejection cases no longer leave a failing native exit code after a successful suite. Both ten-check suites passed with deliberately preconfigured library values; both values were restored afterward. Production installer behavior is unchanged. Remote checks and merge status are recorded on the associated GitHub pull request.

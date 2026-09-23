@@ -6,12 +6,14 @@ $fixtureRoot = Join-Path $workRoot ('ui-skill-install-' + [guid]::NewGuid().ToSt
 New-Item -ItemType Directory -Path $fixtureRoot | Out-Null
 $installer = Join-Path $PSScriptRoot "install-$LibraryKind-context.ps1"
 $prefix = if ($LibraryKind -eq 'backend') { 'backend' } else { 'ui' }
-$environmentName = if ($LibraryKind -eq 'backend') { 'BACKEND_DOCS_ROOT' } else { 'UI_UX_DOCS_ROOT' }
 $marker = if ($LibraryKind -eq 'backend') { 'backend-context' } else { 'ui-ux-context' }
 $names = @('spec', 'build', 'verify') | ForEach-Object { "$prefix-$_" }
 $shell = (Get-Process -Id $PID).Path
 $checks = [Collections.Generic.List[string]]::new()
-$previousProcess = [Environment]::GetEnvironmentVariable($environmentName, 'Process')
+$previousProcess = @{}
+foreach ($name in @('UI_UX_DOCS_ROOT', 'BACKEND_DOCS_ROOT')) {
+    $previousProcess[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+}
 
 function Assert-True($Condition, [string]$Message) { if (-not $Condition) { throw $Message } }
 function Invoke-Install([string]$Root, [string[]]$Extra = @(), [bool]$Success = $true) {
@@ -22,7 +24,9 @@ function Invoke-Install([string]$Root, [string[]]$Extra = @(), [bool]$Success = 
 }
 try {
     # Child processes only; never modify persistent user environment during tests.
-    [Environment]::SetEnvironmentVariable($environmentName, $null, 'Process')
+    foreach ($name in $previousProcess.Keys) {
+        [Environment]::SetEnvironmentVariable($name, $null, 'Process')
+    }
     $first = Join-Path $fixtureRoot 'first'
     New-Item -ItemType Directory -Path (Join-Path $first '.codex') -Force | Out-Null
     $agents = Join-Path $first '.codex/AGENTS.md'
@@ -100,8 +104,13 @@ try {
     $checks.Add('Insufficient instruction budget rejected before writes')
     [pscustomobject]@{Passed=$checks.Count;Checks=$checks} | ConvertTo-Json -Depth 3
 } finally {
-    [Environment]::SetEnvironmentVariable($environmentName, $previousProcess, 'Process')
+    foreach ($name in $previousProcess.Keys) {
+        [Environment]::SetEnvironmentVariable($name, $previousProcess[$name], 'Process')
+    }
     $resolvedFixture = (Resolve-Path -LiteralPath $fixtureRoot).Path
     if ([IO.Path]::GetDirectoryName($resolvedFixture) -ne $workRoot) { throw 'Unsafe fixture cleanup target' }
     Remove-Item -LiteralPath $resolvedFixture -Recurse -Force
 }
+
+# Expected rejection cases must not leak a failed native exit code to the runner.
+$global:LASTEXITCODE = 0
